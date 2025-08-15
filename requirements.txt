@@ -1,0 +1,12 @@
+torch>=2.0.0
+transformers==4.44.0
+accelerate==0.34.2
+peft==0.12.0
+bitsandbytes==0.43.3
+datasets==2.20.0
+autoawq==0.2.6
+safetensors
+rich
+tqdm
+jupyterlab
+wandb
