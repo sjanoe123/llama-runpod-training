@@ -1,0 +1,162 @@
+{
+  "model_config": {
+    "model_path": "/workspace/model",
+    "model_type": "llama",
+    "torch_dtype": "bfloat16",
+    "load_in_4bit": true,
+    "device_map": "auto",
+    "max_memory": {
+      "0": "35GB"
+    }
+  },
+  
+  "lora_config": {
+    "r": 64,
+    "lora_alpha": 128,
+    "target_modules": [
+      "q_proj",
+      "v_proj", 
+      "k_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ],
+    "lora_dropout": 0.05,
+    "bias": "none",
+    "task_type": "CAUSAL_LM",
+    "inference_mode": false
+  },
+  
+  "training_config": {
+    "num_train_epochs": 3,
+    "per_device_train_batch_size": 4,
+    "per_device_eval_batch_size": 4,
+    "gradient_accumulation_steps": 8,
+    "learning_rate": 2e-5,
+    "warmup_steps": 500,
+    "warmup_ratio": 0.03,
+    "weight_decay": 0.01,
+    "logging_steps": 100,
+    "save_steps": 5000,
+    "eval_steps": 1000,
+    "evaluation_strategy": "steps",
+    "save_total_limit": 3,
+    "save_strategy": "steps",
+    "load_best_model_at_end": true,
+    "metric_for_best_model": "eval_loss",
+    "greater_is_better": false,
+    "fp16": true,
+    "bf16": false,
+    "gradient_checkpointing": true,
+    "optim": "paged_adamw_8bit",
+    "lr_scheduler_type": "cosine",
+    "max_grad_norm": 1.0,
+    "group_by_length": true,
+    "report_to": "none",
+    "ddp_find_unused_parameters": false,
+    "gradient_checkpointing_kwargs": {
+      "use_reentrant": false
+    }
+  },
+  
+  "data_config": {
+    "train_file": "/workspace/training_data/train_1M.jsonl",
+    "validation_file": "/workspace/training_data/validation_100K.jsonl",
+    "max_seq_length": 2048,
+    "preprocessing_num_workers": 4,
+    "overwrite_cache": false,
+    "pad_to_max_length": false,
+    "truncation": true,
+    "padding": "max_length"
+  },
+  
+  "quantization_config": {
+    "bits": 4,
+    "group_size": 128,
+    "damp_percent": 0.01,
+    "desc_act": false,
+    "sym": false,
+    "true_sequential": true,
+    "use_cuda_fp16": true,
+    "model_seqlen": 2048,
+    "block_name_to_quantize": null,
+    "module_name_preceding_first_block": null,
+    "batch_size": 1,
+    "pad_token_id": null,
+    "use_exllama": false,
+    "max_input_length": null,
+    "exllama_config": {
+      "version": 1
+    },
+    "cache_block_outputs": true
+  },
+  
+  "medical_optimization": {
+    "enable_medical_focus": true,
+    "medical_keywords_boost": [
+      "diagnosis",
+      "treatment", 
+      "ICD-10",
+      "CPT",
+      "HIPAA",
+      "clinical",
+      "medical necessity",
+      "billing",
+      "compliance",
+      "prior authorization"
+    ],
+    "specialty_weights": {
+      "cardiology": 1.2,
+      "oncology": 1.2,
+      "emergency": 1.1,
+      "pediatrics": 1.1,
+      "geriatrics": 1.1,
+      "neurology": 1.0,
+      "orthopedics": 1.0
+    },
+    "regulatory_focus": {
+      "cms_guidelines": 1.5,
+      "oig_compliance": 1.5,
+      "hipaa_privacy": 1.5,
+      "stark_law": 1.3,
+      "anti_kickback": 1.3
+    }
+  },
+  
+  "optimization_targets": {
+    "inference_latency_ms": 100,
+    "model_size_gb": 2.5,
+    "memory_usage_gb": 8,
+    "medical_accuracy": 0.95,
+    "billing_accuracy": 0.92,
+    "compliance_accuracy": 0.98
+  },
+  
+  "hardware_requirements": {
+    "gpu": "NVIDIA A100 40GB",
+    "gpu_memory_min": 40,
+    "system_ram_min": 64,
+    "storage_min": 200,
+    "cuda_version": "12.1"
+  },
+  
+  "monitoring": {
+    "log_level": "INFO",
+    "save_checkpoints": true,
+    "checkpoint_interval": 5000,
+    "eval_interval": 1000,
+    "profile_memory": true,
+    "track_gpu_stats": true,
+    "wandb_project": "llama-medical-finetune",
+    "wandb_disabled": true
+  },
+  
+  "deployment": {
+    "output_dir": "/workspace/outputs/finetuned_model",
+    "quantized_output_dir": "/workspace/outputs/quantized_model",
+    "push_to_hub": false,
+    "hub_model_id": "healthcare-llama-3.2-3b",
+    "hub_private_repo": true
+  }
+}
